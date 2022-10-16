@@ -22,6 +22,47 @@ TIMEOUT_TEXT = ["Tempus elapsum", "Tempus pecunia est", "Acta est fabula", "Sero
 LEVELS = [(4, 120), (4, 60), (5, 120), (5, 60), (6, 120), (6, 60), [5, 30], [6, 30], [6, 20], [6, 10], [6, 5]]
 
 
+def to_roman(number):
+    roman = ""
+    m = int(number / 1000)
+    number -= m * 1000
+    roman += "M" * m
+    cm = int(number / 900)
+    number -= cm * 900
+    roman += "CM" * cm
+    d = int(number / 500)
+    number -= d * 500
+    roman += "D" * d
+    cd = int(number / 400)
+    number -= cd * 400
+    roman += "CD" * cd
+    c = int(number / 100)
+    number -= c * 100
+    roman += "C" * c
+    xc = int(number / 90)
+    number -= xc * 90
+    roman += "XC" * xc
+    l = int(number / 50)
+    number -= l * 50
+    roman += "L" * l
+    xl = int(number / 40)
+    number -= xl * 40
+    roman += "XL" * xl
+    x = int(number / 10)
+    number -= x * 10
+    roman += "X" * x
+    ix = int(number / 9)
+    number -= ix * 9
+    roman += "IX" * ix
+    v = int(number / 5)
+    number -= v * 5
+    roman += "V" * v
+    iv = int(number / 4)
+    number -= iv * 4
+    roman += "IV" * iv
+    roman += "I" * number
+    return roman
+
 def main():
 
     def mouse_down(pos):
@@ -284,7 +325,7 @@ def main():
                 t_min = int(time / 60)
                 t_ds = int((time - 60 * t_min) / 10)
                 t_s = time - 60 * t_min - 10 * t_ds
-                time_img = font.render("Level " + str(level_idx) + "      " + str(t_min) + ":" + str(t_ds) + str(t_s),
+                time_img = font.render("Level " + to_roman(level_idx) + "      " + str(t_min) + ":" + str(t_ds) + str(t_s),
                                        True, (255, 255, 255))
                 time_pos = (WIDTH - 200, 20)
                 screen.blit(time_img, time_pos)
