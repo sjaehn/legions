@@ -63,6 +63,7 @@ def to_roman(number):
     roman += "I" * number
     return roman
 
+
 def main():
 
     def mouse_down(pos):
@@ -348,8 +349,6 @@ def main():
     pygame.mixer.music.set_endevent(MUSIC_END)
 
     TIME_EVENT = pygame.USEREVENT + 2
-    pygame.time.set_timer(TIME_EVENT, 1000)
-    time = 60
 
     font = pygame.font.Font(path + "Cinzel-Regular.ttf", 24)
 
@@ -375,10 +374,12 @@ def main():
             if not alive:
                 break
 
+            pygame.time.set_timer(TIME_EVENT, 0)        # Disable timer
             msg_box("Generiere Level " + str(level_idx), None, False, (600, 380, 700, 140))
             game_map = Map((size, size), 1, 2 ** size)
             game_pos = game_map.start
             game_count = game_map.force_level(game_pos)
+            pygame.time.set_timer(TIME_EVENT, 1000)     # Re-enable timer
 
             # Background
             img_idx = random.randint(1, 5)
