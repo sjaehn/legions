@@ -4,6 +4,8 @@ A Python logic game
 Emperor, defeat foreign legions and take over their soldiers.
 Then you will be honored with glory and fame in Rome.
 
+![screenshot](https://raw.githubusercontent.com/sjaehn/legions/master/doc/screenshot.png "Screenshot from Legions")
+
 ## Playing
 Clone or download this repository. Start the game from the legions path, 
 e.g. by:
