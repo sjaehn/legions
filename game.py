@@ -294,8 +294,8 @@ def main():
                             s1 = pygame.Surface(soldier[0].get_size(), pygame.SRCALPHA, 32)
                             s1.convert_alpha()
                             s1.blit(soldier[0], (0, 0))
-                            s1 = pygame.transform.scale(s1, (int(dx), int(2.2 * dx)))
-                            screen.blit(s1, (int(sx - dx), int(sy - 2.2 * dx)))
+                            s1 = pygame.transform.scale(s1, (int(dx), int(2.5 * dx)))
+                            screen.blit(s1, (int(sx - dx), int(sy - 2.5 * dx)))
 
                 # Draw labels
                 if game_map.contains_legion((x, y)):
