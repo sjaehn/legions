@@ -362,8 +362,8 @@ def main():
 
     game_on = True
 
-    msg_box("Legions\n\nImperator, besiege fremde Legionen und übernehme deren Truppen. "
-            "Dann wird der Ruhm in Rom dir sicher sein!", None, True, (500, 200, 900, 500))
+    msg_box("Legions\n\nEmperor, defeat foreign legions and take over their soldiers.. "
+            "Then you will be honored with glory and fame in Rome!", None, True, (500, 200, 900, 500))
 
     while game_on:
         alive = True
@@ -375,7 +375,7 @@ def main():
                 break
 
             pygame.time.set_timer(TIME_EVENT, 0)        # Disable timer
-            msg_box("Generiere Level " + str(level_idx), None, False, (600, 380, 700, 140))
+            msg_box("Create level " + to_roman(level_idx) + " ...", None, False, (600, 380, 700, 140))
             game_map = Map((size, size), 1, 2 ** size)
             game_pos = game_map.start
             game_count = game_map.force_level(game_pos)
@@ -436,9 +436,9 @@ def main():
                             fighting = False
 
         if alive:
-            msg_box("Das Ende der Level ist erreicht!", None, True, (500, 400, 900, 100))
+            msg_box("Game completed!", None, True, (500, 400, 900, 100))
 
-        if msg_box("Auf zu einer neuen Schlacht!", ["In proelium", "Finis"], True, (500, 300, 900, 300)) == 1:
+        if msg_box("A new fight?", ["In proelium", "Finis"], True, (500, 300, 900, 300)) == 1:
             game_on = False
 
     pygame.quit()
