@@ -21,7 +21,6 @@ TIMEOUT_TEXT = ["Tempus elapsum", "Tempus pecunia est", "Acta est fabula", "Sero
 
 LEVELS = [(4, 120), (4, 60), (5, 120), (5, 60), (6, 120), (6, 60), [5, 30], [6, 30], [6, 20], [6, 10], [6, 5]]
 
-
 def to_roman(number):
     roman = ""
     m = int(number / 1000)
@@ -107,7 +106,7 @@ def main():
 
     def play_music():
         snd_idx = random.randint(1, 3)
-        pygame.mixer.music.load("/home/sven/dev/py/legions/track0" + str(snd_idx) + ".ogg")
+        pygame.mixer.music.load(os.getcwd() + "/track0" + str(snd_idx) + ".ogg")
         pygame.mixer.music.play()
 
     def load_image(name, colorkey=None):
