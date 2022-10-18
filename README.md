@@ -6,6 +6,8 @@ Then you will be honored with glory and fame in Rome.
 
 ![screenshot](https://raw.githubusercontent.com/sjaehn/legions/master/screenshot.png "Screenshot from Legions")
 
+[Preview on Youtube ...](https://www.youtube.com/watch?v=QJckVRGP-uA)
+
 ## Playing
 Clone or download this repository. Start the game from the legions path, 
 e.g. by:

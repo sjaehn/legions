@@ -21,6 +21,7 @@ TIMEOUT_TEXT = ["Tempus elapsum", "Tempus pecunia est", "Acta est fabula", "Sero
 
 LEVELS = [(4, 120), (4, 60), (5, 120), (5, 60), (6, 120), (6, 60), [5, 30], [6, 30], [6, 20], [6, 10], [6, 5]]
 
+
 def to_roman(number):
     roman = ""
     m = int(number / 1000)
@@ -361,7 +362,7 @@ def main():
 
     game_on = True
 
-    msg_box("Legions\n\nEmperor, defeat foreign legions and take over their soldiers.. "
+    msg_box("Legions\n\nEmperor, defeat foreign legions and take over their soldiers. "
             "Then you will be honored with glory and fame in Rome!", None, True, (500, 200, 900, 500))
 
     while game_on:
