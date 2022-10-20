@@ -164,6 +164,12 @@ class Map:
         return chain
 
     def force_level(self, pos):
+        """
+        Calculates the force level of the legion in the field provided by pos.
+        :param pos: position of the field
+        :return: Force level of the legion in the field provided by pos. 0 if there's no legion there.
+        """
+
         x, y = pos
         if self.map[x][y] is None:
             return 0
@@ -171,9 +177,21 @@ class Map:
             return self.map[x][y][0] * self.map[x][y][1]
 
     def contains_legion(self, pos):
+        """
+        Checks if there is a legion o a field provided by pos.
+
+        :param pos: position of the field to check
+        :return: True if there is a legion o a field provided by pos. Otherwise False.
+        """
+
         return self.force_level(pos) > 0
 
     def count_legions(self):
+        """
+        Counts the number of remaining other legions.
+        :return: number of remaining other legions
+        """
+
         if self.map is None:
             return 0
 
@@ -186,9 +204,22 @@ class Map:
         return count
 
     def is_empty(self):
+        """
+        Checks if there are any (other) legions on the map.
+
+        :return: True if there are any (other) legions on the map. Otherwise False.
+        """
+
         return self.count_legions() <= 1
 
     def has_neighbors(self, pos):
+        """
+        Checks if there are legions next to the field pos.
+
+        :param pos: position
+        :return: True if there are legions next to the field pos. Otherwise False.
+        """
+
         x, y = pos
         if (x >= 1) and (self.contains_legion((x - 1, y))) and (self.force_level((x - 1, y)) > 0):
             return True

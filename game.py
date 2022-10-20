@@ -19,10 +19,17 @@ ISOLATED_TEXT = ["Errare humanum est",
                  "Quo vadis?"]
 TIMEOUT_TEXT = ["Tempus elapsum", "Tempus pecunia est", "Acta est fabula", "Sero venientibus ossa"]
 
-LEVELS = [(4, 120), (4, 60), (5, 120), (5, 60), (6, 120), (6, 60), [5, 30], [6, 30], [6, 20], [6, 10], [6, 5]]
+LEVELS = [(4, 120), (4, 60), (5, 120), (5, 60), (6, 120), (6, 60), [5, 30], [6, 30], [6, 20], [6, 15], [6, 10], [6, 5]]
 
 
 def to_roman(number):
+    """
+    Converts an integer number to a roman number as a string
+
+    :param number: integer
+    :return: roman number as a string
+    """
+
     roman = ""
     m = int(number / 1000)
     number -= m * 1000
@@ -66,11 +73,19 @@ def to_roman(number):
 
 def main():
 
-    def mouse_down(pos):
+    def enter(pos):
+        """
+        Tries to enter a new field. Changes game_pos and game_count if the field can be entered.
+
+        :param pos: position of the new field
+        :return: True if the field provided by pos can't be entered or the the legion of the field provided by pos can
+        be defeated. Otherwise False.
+        """
+
         nonlocal game_pos
         nonlocal game_count
         x, y = pos
-        print("mouse_down", x, y)
+        print("enter", x, y)
         if (x > 0) and (x < WIDTH) and (y > 0) and (y < HEIGHT):
             xi = int(x / (WIDTH / game_map.width))
             yi = int(y / (HEIGHT / game_map.height))
@@ -128,6 +143,13 @@ def main():
         return image, image.get_rect()
 
     def text_field(text, rect):
+        """
+        Draws a multi line text on the screen. Adds line breaks if needed.
+
+        :param text: text to be displayed
+        :param rect: position and extends of the text
+        """
+
         x, y, w, h = rect
         words = [word.split(' ') for word in text.splitlines()]
 
@@ -164,6 +186,17 @@ def main():
         pygame.display.flip()
 
     def msg_box(text, buttons, response, rect):
+        """
+        Draws a message box on the screen and optionally waits for any mouse click events.
+
+        :param text: text string to be displayed
+        :param buttons: optional, list of button text strings to be displayed on the bottom of the box
+        :param response: True if the program has to wait until a click on one of the buttons (if provided) or on any
+        position (if no buttons provided), otherwise False
+        :param rect: position and extends of the box on the screen
+        :return: button number (if buttons provided), otherwise 0
+        """
+
         x, y, w, h = rect
 
         # Draw background
@@ -223,7 +256,10 @@ def main():
                             if (mx >= bx) and (mx <= bx + bw) and (my >= by) and (my <= by + bh):
                                 return button_idx
 
+        return 0
+
     def draw():
+        # Draw background first
         screen.blit(background, (0, 0))
 
         for x in range(game_map.width):
@@ -231,20 +267,20 @@ def main():
 
                 # Draw fields
                 if game_map.map[x][y] is None:
-                    w = 1
+                    w = 1   # 1px border
 
                 elif not game_map.contains_legion((x, y)):
-                    w = 1
+                    w = 1   # 1px border
 
                 elif ((x, y) == game_pos) and alive:
-                    w = 0
+                    w = 0   # Filled
 
                 elif ((x + 1, y) == game_pos) or ((x - 1, y) == game_pos) or ((x, y + 1) == game_pos) or (
                         (x, y - 1) == game_pos):
-                    w = 4
+                    w = 4   # 1px border
 
                 else:
-                    w = 1
+                    w = 1   # 1px border
 
                 pygame.draw.polygon(screen,
                                     (255, 0, 0, 32),
@@ -254,8 +290,8 @@ def main():
                                      to_3d((x * (WIDTH / game_map.width), (y + 1) * (HEIGHT / game_map.height)))],
                                     width=w)
 
-                # Draw soldiers
                 if (x, y) == game_pos:
+                    # Dead: draw cross
                     if not alive:
                         pygame.draw.polygon(screen,
                                             (255, 0, 0, 32),
@@ -291,6 +327,7 @@ def main():
                 elif game_map.map[x][y] is None:
                     pass
 
+                # Draw barrier
                 elif not game_map.contains_legion((x, y)):
                     b_idx = game_map.map[x][y][0]
                     print("b_idx:", b_idx)
@@ -307,6 +344,7 @@ def main():
                     b1 = pygame.transform.scale(b1, (int(bw), int(0.5 * bw)))
                     screen.blit(b1, (bx, by))
 
+                # Draw soldier
                 else:
                     xm = 2 ** size + 2
                     ym = 2 ** size + 2
@@ -356,45 +394,43 @@ def main():
                 t_min = int(time / 60)
                 t_ds = int((time - 60 * t_min) / 10)
                 t_s = time - 60 * t_min - 10 * t_ds
-                time_img = font.render("Level " + to_roman(level_idx) + "      " + str(t_min) + ":" + str(t_ds) + str(t_s),
+                time_img = font.render("Level " + to_roman(level_idx) + "      " + str(t_min) + ":" + str(t_ds) +
+                                       str(t_s),
                                        True, (255, 255, 255))
                 time_pos = (WIDTH - 200, 20)
                 screen.blit(time_img, time_pos)
 
         pygame.display.flip()
 
+    # Game
     # Init
     random.seed()
     path = os.getcwd() + "/"
+    TIME_EVENT = pygame.USEREVENT + 1
 
+    # Pygame init
     pygame.init()
     screen = pygame.display.set_mode((WIDTH + 2 * XFRAME, HEIGHT + 2 * YFRAME))
     pygame.display.set_caption("Legions")
 
-    bg_marble = load_image(path + "marble.jpg")
-
+    # Sound init
     pygame.mixer.init()
     play_music()
-    MUSIC_END = pygame.USEREVENT + 1
+    MUSIC_END = pygame.USEREVENT + 2
     pygame.mixer.music.set_endevent(MUSIC_END)
 
-    TIME_EVENT = pygame.USEREVENT + 2
-
+    # Load images, fonts, ...
+    bg_marble = load_image(path + "marble.jpg")     # Message box background
     font = pygame.font.Font(path + "Cinzel-Regular.ttf", 24)
-
-    # Soldier
     soldier = load_image(path + "soldier.png")
+    barrier = [load_image(path + "barrier0" + str(n) + ".png") for n in range(1, 5)]
 
-    # Barrier
-    barrier = []
-    for n in range(1, 5):
-        barrier.append(load_image(path + "barrier0" + str(n) + ".png"))
-
+    # Start screen
     game_on = True
-
     msg_box("Legions\n\nEmperor, defeat foreign legions and take over their soldiers. "
             "Then you will be honored with glory and fame in Rome!", None, True, (500, 200, 900, 500))
 
+    # Game loop
     while game_on:
         alive = True
 
@@ -404,6 +440,7 @@ def main():
             if not alive:
                 break
 
+            # Create new level
             pygame.time.set_timer(TIME_EVENT, 0)        # Disable timer
             msg_box("Create level " + to_roman(level_idx) + " ...", None, False, (600, 380, 700, 140))
             game_map = Map((size, size), 1, 2 ** size)
@@ -411,7 +448,7 @@ def main():
             game_count = game_map.force_level(game_pos)
             pygame.time.set_timer(TIME_EVENT, 1000)     # Re-enable timer
 
-            # Background
+            # Load new Background
             img_idx = random.randint(1, 5)
             bgimage = load_image(path + "bg0" + str(img_idx) + ".jpg")
             background = pygame.Surface(screen.get_size(), pygame.SRCALPHA, 32)
@@ -422,7 +459,7 @@ def main():
             # Fighting
             fighting = True
             while fighting:
-                # Handle Input Events
+                # Handle events
                 for event in pygame.event.get():
 
                     if event.type == MUSIC_END:
@@ -444,7 +481,7 @@ def main():
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         pos = pygame.mouse.get_pos()
                         pos = to_2d(pos)
-                        b = mouse_down(pos)
+                        b = enter(pos)
 
                         if not b:
                             alive = False
