@@ -236,7 +236,7 @@ def main():
                 elif not game_map.contains_legion((x, y)):
                     w = 1
 
-                elif (x, y) == game_pos:
+                elif ((x, y) == game_pos) and alive:
                     w = 0
 
                 elif ((x + 1, y) == game_pos) or ((x - 1, y) == game_pos) or ((x, y + 1) == game_pos) or (
@@ -255,7 +255,40 @@ def main():
                                     width=w)
 
                 # Draw soldiers
-                if game_map.map[x][y] is None:
+                if (x, y) == game_pos:
+                    if not alive:
+                        pygame.draw.polygon(screen,
+                                            (255, 0, 0, 32),
+                                            [to_3d(((x + 0.07) * (WIDTH / game_map.width),
+                                                    (y + 0.02) * (HEIGHT / game_map.height))),
+                                             to_3d(((x + 0.5) * (WIDTH / game_map.width),
+                                                    (y + 0.45) * (HEIGHT / game_map.height))),
+                                             to_3d(((x + 0.93) * (WIDTH / game_map.width),
+                                                    (y + 0.02) * (HEIGHT / game_map.height))),
+                                             to_3d(((x + 0.98) * (WIDTH / game_map.width),
+                                                    (y + 0.07) * (HEIGHT / game_map.height))),
+                                             to_3d(((x + 0.55) * (WIDTH / game_map.width),
+                                                    (y + 0.5) * (HEIGHT / game_map.height))),
+                                             to_3d(((x + 0.98) * (WIDTH / game_map.width),
+                                                    (y + 0.93) * (HEIGHT / game_map.height))),
+                                             to_3d(((x + 0.93) * (WIDTH / game_map.width),
+                                                    (y + 0.98) * (HEIGHT / game_map.height))),
+                                             to_3d(((x + 0.5) * (WIDTH / game_map.width),
+                                                    (y + 0.55) * (HEIGHT / game_map.height))),
+                                             to_3d(((x + 0.07) * (WIDTH / game_map.width),
+                                                    (y + 0.98) * (HEIGHT / game_map.height))),
+                                             to_3d(((x + 0.02) * (WIDTH / game_map.width),
+                                                    (y + 0.93) * (HEIGHT / game_map.height))),
+                                             to_3d(((x + 0.45) * (WIDTH / game_map.width),
+                                                    (y + 0.5) * (HEIGHT / game_map.height))),
+                                             to_3d(((x + 0.02) * (WIDTH / game_map.width),
+                                                    (y + 0.07) * (HEIGHT / game_map.height))),
+                                             to_3d(((x + 0.07) * (WIDTH / game_map.width),
+                                                   (y + 0.02) * (HEIGHT / game_map.height)))])
+
+                    pass
+
+                elif game_map.map[x][y] is None:
                     pass
 
                 elif not game_map.contains_legion((x, y)):
@@ -273,9 +306,6 @@ def main():
                     b1.blit(b[0], (0, 0))
                     b1 = pygame.transform.scale(b1, (int(bw), int(0.5 * bw)))
                     screen.blit(b1, (bx, by))
-
-                elif (x, y) == game_pos:
-                    pass
 
                 else:
                     xm = 2 ** size + 2
@@ -417,23 +447,27 @@ def main():
                         b = mouse_down(pos)
 
                         if not b:
+                            alive = False
+                            fighting = False
+                            draw()
                             msg_idx = random.randint(0, len(FAIL_TEXT) - 1)
                             msg_box(FAIL_TEXT[msg_idx], None, True, (500, 400, 900, 100))
-                            alive = False
+
+                        elif game_map.is_empty():
                             fighting = False
-
-                        draw()
-
-                        if game_map.is_empty():
+                            draw()
                             msg_idx = random.randint(0, len(VICTORY_TEXT) - 1)
                             msg_box(VICTORY_TEXT[msg_idx], None, True, (500, 400, 900, 100))
-                            fighting = False
 
                         elif not game_map.has_neighbors(game_pos):
-                            msg_idx = random.randint(0, len(ISOLATED_TEXT) - 1)
-                            msg_box(ISOLATED_TEXT[msg_idx], None, True, (500, 400, 900, 100))
                             alive = False
                             fighting = False
+                            draw()
+                            msg_idx = random.randint(0, len(ISOLATED_TEXT) - 1)
+                            msg_box(ISOLATED_TEXT[msg_idx], None, True, (500, 400, 900, 100))
+
+                        else:
+                            draw()
 
         if alive:
             msg_box("Game completed!", None, True, (500, 400, 900, 100))
