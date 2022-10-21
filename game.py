@@ -30,44 +30,14 @@ def to_roman(number):
     :return: roman number as a string
     """
 
+    R_NUMBERS = [("M", 1000), ("CM", 900), ("D", 500), ("CD", 400), ("C", 100), ("XC", 90), ("L", 50), ("XL", 40),
+                 ("X", 10), ("IX", 9), ("V", 5), ("IV", 4), ("I", 1)]
     roman = ""
-    m = int(number / 1000)
-    number -= m * 1000
-    roman += "M" * m
-    cm = int(number / 900)
-    number -= cm * 900
-    roman += "CM" * cm
-    d = int(number / 500)
-    number -= d * 500
-    roman += "D" * d
-    cd = int(number / 400)
-    number -= cd * 400
-    roman += "CD" * cd
-    c = int(number / 100)
-    number -= c * 100
-    roman += "C" * c
-    xc = int(number / 90)
-    number -= xc * 90
-    roman += "XC" * xc
-    l = int(number / 50)
-    number -= l * 50
-    roman += "L" * l
-    xl = int(number / 40)
-    number -= xl * 40
-    roman += "XL" * xl
-    x = int(number / 10)
-    number -= x * 10
-    roman += "X" * x
-    ix = int(number / 9)
-    number -= ix * 9
-    roman += "IX" * ix
-    v = int(number / 5)
-    number -= v * 5
-    roman += "V" * v
-    iv = int(number / 4)
-    number -= iv * 4
-    roman += "IV" * iv
-    roman += "I" * number
+    for r in R_NUMBERS:
+        symbol, value = r
+        count = int(number / value)
+        number -= count * value
+        roman += symbol * count
     return roman
 
 
