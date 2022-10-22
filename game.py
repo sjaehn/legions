@@ -116,50 +116,76 @@ def main():
         """
         Draws a multi line text on the screen. Adds line breaks if needed.
 
-        :param text: text to be displayed
+        :param text: text string, or a tuple of a text string and a font, or a list thereof to be displayed
         :param rect: position and extends of the text
         """
 
         x, y, w, h = rect
-        words = [word.split(' ') for word in text.splitlines()]
-
-        # Analyze text
-        text_buffer = [""]
+        text_buffer = []
         text_height = 0
-        for line in words:
-            line_height = 0
-            for word in line:
-                words_img = font.render(text_buffer[-1] + word, True, (0, 0, 0))
-                words_width, words_height = words_img.get_size()
+        text_font = font
 
-                if words_height > line_height:
-                    line_height = words_height
+        # Convert text to list
+        if isinstance(text, str):
+            text_list = [text]
+        elif isinstance(text, tuple):
+            text_list = [text]
+        elif isinstance(text, list):
+            text_list = text
+        else:
+            return
 
-                if words_width >= w:
-                    text_height += line_height
-                    line_height = 0
-                    text_buffer.append("")
+        for block in text_list:
+            # Analyze block data format
+            if isinstance(block, tuple):
+                block_text, text_font = block
+            else:
+                block_text = block
 
-                text_buffer[-1] += word + " "
+            words = [word.split(' ') for word in block_text.splitlines()]
+            block_buffer = [""]
 
-            text_height += line_height
-            text_buffer.append("")
+            # Analyze block text
+            for line in words:
+                line_height = 0
+                for word in line:
+                    words_img = text_font.render(block_buffer[-1] + word, True, (0, 0, 0))
+                    words_width, words_height = words_img.get_size()
+
+                    if words_height > line_height:
+                        line_height = words_height
+
+                    if words_width >= w:
+                        text_height += line_height
+                        line_height = 0
+                        block_buffer.append("")
+
+                    block_buffer[-1] += word + " "
+
+                text_height += line_height
+                block_buffer.append("")
+
+            # Write text buffer
+            text_buffer.append((block_buffer, text_font))
 
         # Print text on screen
         height_count = 0
-        for line in text_buffer:
-            line_img = font.render(line, True, (0, 0, 0))
-            line_width, line_height = line_img.get_size()
-            line_pos = (x + int(0.5 * w - 0.5 * line_width), y + int(0.5 * h - 0.5 * text_height + height_count))
-            screen.blit(line_img, line_pos)
-            height_count += line_height
+        for block in text_buffer:
+            block_text, text_font = block
+
+            for line in block_text:
+                line_img = text_font.render(line, True, (0, 0, 0))
+                line_width, line_height = line_img.get_size()
+                line_pos = (x + int(0.5 * w - 0.5 * line_width), y + int(0.5 * h - 0.5 * text_height + height_count))
+                screen.blit(line_img, line_pos)
+                height_count += line_height
         pygame.display.flip()
 
     def msg_box(text, buttons, response, rect):
         """
         Draws a message box on the screen and optionally waits for any mouse click events.
 
-        :param text: text string to be displayed
+        :param text: text string, or a tuple of a text string and a font, or a list thereof to be displayed
         :param buttons: optional, list of button text strings to be displayed on the bottom of the box
         :param response: True if the program has to wait until a click on one of the buttons (if provided) or on any
         position (if no buttons provided), otherwise False
@@ -392,13 +418,15 @@ def main():
     # Load images, fonts, ...
     bg_marble = load_image(path + "marble.jpg")     # Message box background
     font = pygame.font.Font(path + "Cinzel-Regular.ttf", 24)
+    title_font = pygame.font.Font(path + "Cinzel-Regular.ttf", 36)
     soldier = load_image(path + "soldier.png")
     barrier = [load_image(path + "barrier0" + str(n) + ".png") for n in range(1, 5)]
 
     # Start screen
     game_on = True
-    msg_box("Legions\n\nEmperor, defeat foreign legions and take over their soldiers. "
-            "Then you will be honored with glory and fame in Rome!", None, True, (500, 200, 900, 500))
+    msg_box([("Legions", title_font),
+             ("Emperor, defeat foreign legions and take over their soldiers. "
+              "Then you will be honored with glory and fame in Rome!", font)], None, True, (500, 200, 900, 500))
 
     # Game loop
     while game_on:
