@@ -21,7 +21,14 @@ FAIL_TEXT = [[("la", "Quintili Vare, legiones redde"), ("en", "Quintilius Varus,
              [("la", "Quem di diligunt, adulescens moritur"), ("en", "He who is loved by the gods will die young")],
              [("la", "Requiescat in pace"), ("en", "Rest in peace")],
              [("la", "Contra vim mortis non est medicamen in hortis"),
-              ("en", "No sage grows in the gardens against the power of death")]]
+              ("en", "No sage grows in the gardens against the power of death")],
+             [("la", "Mors ultima linea rerum est"), ("en", "Death is the final limit of things")],
+             [("la", "Nec mors humano subiacet arbitrio"), ("en", "Nor is death subject to human discretion")],
+             [("la", "Nihil verum nisi mors"), ("en", "Nothing is true but death")],
+             [("la", "Dulce et decorum est pro patria mori"),
+              ("en", "It is sweet and honorable to die for the fatherland")],
+             [("la", "Ut desint vires tamen est laudanda voluntas"),
+              ("en", "Although the power is lacking, the will is commendable")]]
 
 ISOLATED_TEXT = [[("la", "Errare humanum est"), ("en", "To err is human")],
                  [("la", "Quo vadis?"), ("en", "Whither goest thou?")]]
@@ -29,7 +36,11 @@ ISOLATED_TEXT = [[("la", "Errare humanum est"), ("en", "To err is human")],
 TIMEOUT_TEXT = [[("la", "Tempus elapsum"), ("en", "Time is over")],
                 [("la", "Tempus pecunia est"), ("en", "Time is money")],
                 [("la", "Acta est fabula"), ("en", "The game is over")],
-                [("la", "Sero venientibus ossa"), ("en", "The late one only gets the bones")]]
+                [("la", "Sero venientibus ossa"), ("en", "The late one only gets the bones")],
+                [("la", "Diem perdidi"), ("en", "I lost a day")]]
+
+WELCOME_TEXT = [("en", "Emperor, defeat foreign legions and take over their soldiers. "
+                       "Then you will be honored with glory and fame in Rome!")]
 
 LEVELS = [(4, 120), (4, 60), (5, 120), (5, 60), (6, 120), (6, 60), [5, 30], [6, 30], [6, 20], [6, 15], [6, 10], [6, 5]]
 
@@ -49,6 +60,7 @@ def translate_text(text, lang):
             return tx
 
     return ""
+
 
 def to_roman(number):
     """
@@ -450,9 +462,10 @@ def main():
 
     # Start screen
     game_on = True
-    msg_box([("Legions", title_font),
-             ("Emperor, defeat foreign legions and take over their soldiers. "
-              "Then you will be honored with glory and fame in Rome!", font)], None, True, (500, 200, 900, 500))
+    welcome_text = translate_text(WELCOME_TEXT, locale)
+    if not welcome_text:
+        welcome_text = translate_text(WELCOME_TEXT, "en")
+    msg_box([("Legions", title_font), (welcome_text, font)], None, True, (500, 200, 900, 500))
 
     # Game loop
     while game_on:
