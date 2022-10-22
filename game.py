@@ -12,15 +12,43 @@ YFRAME = 50
 XOFFSET = 0
 YOFFSET = -80
 
-VICTORY_TEXT = ["Veni, vidi, vici", "Gloria victori", "Victoria nostra est", "Victrix causa deis placuit"]
-FAIL_TEXT = ["Quintili Vare, legiones redde", "Quem dei diligunt, adulescens moritur",
-             "Requiescat in pace", "Contra vim mortis non est medicamen in hortis"]
-ISOLATED_TEXT = ["Errare humanum est",
-                 "Quo vadis?"]
-TIMEOUT_TEXT = ["Tempus elapsum", "Tempus pecunia est", "Acta est fabula", "Sero venientibus ossa"]
+VICTORY_TEXT = [[("la", "Veni, vidi, vici"), ("en", "I came; I saw; I conquered")],
+                [("la", "Gloria victori"), ("en", "Glory to the winner")],
+                [("la", "Victoria nostra est"), ("en", "Victory is ours")],
+                [("la", "Victrix causa deis placuit"), ("en", "The victorious cause pleased the gods")]]
+
+FAIL_TEXT = [[("la", "Quintili Vare, legiones redde"), ("en", "Quintilius Varus, give me back my legions")],
+             [("la", "Quem di diligunt, adulescens moritur"), ("en", "He who is loved by the gods will die young")],
+             [("la", "Requiescat in pace"), ("en", "Rest in peace")],
+             [("la", "Contra vim mortis non est medicamen in hortis"),
+              ("en", "No sage grows in the gardens against the power of death")]]
+
+ISOLATED_TEXT = [[("la", "Errare humanum est"), ("en", "To err is human")],
+                 [("la", "Quo vadis?"), ("en", "Whither goest thou?")]]
+
+TIMEOUT_TEXT = [[("la", "Tempus elapsum"), ("en", "Time is over")],
+                [("la", "Tempus pecunia est"), ("en", "Time is money")],
+                [("la", "Acta est fabula"), ("en", "The game is over")],
+                [("la", "Sero venientibus ossa"), ("en", "The late one only gets the bones")]]
 
 LEVELS = [(4, 120), (4, 60), (5, 120), (5, 60), (6, 120), (6, 60), [5, 30], [6, 30], [6, 20], [6, 15], [6, 10], [6, 5]]
 
+
+def translate_text(text, lang):
+    """
+    Selects the text for the provided language from a text dictionary
+    
+    :param text: text dictionary as a list of tuples containing the language code and the text
+    :param lang: language code
+    :return: selected text
+    """
+
+    for t in text:
+        lc, tx = t
+        if lc == lang:
+            return tx
+
+    return ""
 
 def to_roman(number):
     """
@@ -143,11 +171,12 @@ def main():
                 block_text = block
 
             words = [word.split(' ') for word in block_text.splitlines()]
-            block_buffer = [""]
+            block_buffer = []
 
             # Analyze block text
             for line in words:
                 line_height = 0
+                block_buffer.append("")
                 for word in line:
                     words_img = text_font.render(block_buffer[-1] + word, True, (0, 0, 0))
                     words_width, words_height = words_img.get_size()
@@ -163,7 +192,6 @@ def main():
                     block_buffer[-1] += word + " "
 
                 text_height += line_height
-                block_buffer.append("")
 
             # Write text buffer
             text_buffer.append((block_buffer, text_font))
@@ -402,6 +430,7 @@ def main():
     # Init
     random.seed()
     path = os.getcwd() + "/"
+    locale = "en"
     TIME_EVENT = pygame.USEREVENT + 1
 
     # Pygame init
@@ -419,6 +448,7 @@ def main():
     bg_marble = load_image(path + "marble.jpg")     # Message box background
     font = pygame.font.Font(path + "Cinzel-Regular.ttf", 24)
     title_font = pygame.font.Font(path + "Cinzel-Regular.ttf", 36)
+    sub_font = pygame.font.Font(path + "Cinzel-Regular.ttf", 12)
     soldier = load_image(path + "soldier.png")
     barrier = [load_image(path + "barrier0" + str(n) + ".png") for n in range(1, 5)]
 
@@ -469,7 +499,13 @@ def main():
 
                         if time <= 0:
                             msg_idx = random.randint(0, len(TIMEOUT_TEXT) - 1)
-                            msg_box(TIMEOUT_TEXT[msg_idx], None, True, (500, 400, 900, 100))
+                            msg_txt = [translate_text(TIMEOUT_TEXT[msg_idx], "la")]
+                            msg_loc = translate_text(TIMEOUT_TEXT[msg_idx], locale)
+                            if msg_loc:
+                                msg_txt.append(("(" + msg_loc + ")", sub_font))
+
+                            msg_box(msg_txt, None, True, (500, 400, 900, 100))
+
                             alive = False
                             fighting = False
 
@@ -486,20 +522,35 @@ def main():
                             fighting = False
                             draw()
                             msg_idx = random.randint(0, len(FAIL_TEXT) - 1)
-                            msg_box(FAIL_TEXT[msg_idx], None, True, (500, 400, 900, 100))
+                            msg_txt = [translate_text(FAIL_TEXT[msg_idx], "la")]
+                            msg_loc = translate_text(FAIL_TEXT[msg_idx], locale)
+                            if msg_loc:
+                                msg_txt.append(("(" + msg_loc + ")", sub_font))
+
+                            msg_box(msg_txt, None, True, (500, 400, 900, 100))
 
                         elif game_map.is_empty():
                             fighting = False
                             draw()
                             msg_idx = random.randint(0, len(VICTORY_TEXT) - 1)
-                            msg_box(VICTORY_TEXT[msg_idx], None, True, (500, 400, 900, 100))
+                            msg_txt = [translate_text(VICTORY_TEXT[msg_idx], "la")]
+                            msg_loc = translate_text(VICTORY_TEXT[msg_idx], locale)
+                            if msg_loc:
+                                msg_txt.append(("(" + msg_loc + ")", sub_font))
+
+                            msg_box(msg_txt, None, True, (500, 400, 900, 100))
 
                         elif not game_map.has_neighbors(game_pos):
                             alive = False
                             fighting = False
                             draw()
                             msg_idx = random.randint(0, len(ISOLATED_TEXT) - 1)
-                            msg_box(ISOLATED_TEXT[msg_idx], None, True, (500, 400, 900, 100))
+                            msg_txt = [translate_text(ISOLATED_TEXT[msg_idx], "la")]
+                            msg_loc = translate_text(ISOLATED_TEXT[msg_idx], locale)
+                            if msg_loc:
+                                msg_txt.append(("(" + msg_loc + ")", sub_font))
+
+                            msg_box(msg_txt, None, True, (500, 400, 900, 100))
 
                         else:
                             draw()
