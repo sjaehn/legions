@@ -11,6 +11,7 @@ XFRAME = 50
 YFRAME = 50
 XOFFSET = 0
 YOFFSET = -80
+ANIMATION_TIME = 300
 
 VICTORY_TEXT = [[("la", "Veni, vidi, vici"), ("en", "I came; I saw; I conquered")],
                 [("la", "Gloria victori"), ("en", "Glory to the winner")],
@@ -314,27 +315,27 @@ def main():
             o_y = int(dy1 + o_dy - 0.5 * obj_size)
             o_pos = (o_x, o_y)
             o_size = random.randint(int(0.5 * obj_size), obj_size)
-            o_start = random.randint(0, 250)
+            o_start = random.randint(0, int(0.5 * ANIMATION_TIME))
             objs.append((o_pos, o_size, o_start))
 
         # Run animation
         t0 = pygame.time.get_ticks()
         sound_idx = random.randint(0, 2)
         pygame.mixer.Sound.play(sword_sound[sound_idx])
-        while pygame.time.get_ticks() < t0 + 500:
+        while pygame.time.get_ticks() < t0 + ANIMATION_TIME:
             draw()
             t = pygame.time.get_ticks() - t0
             for o in objs:
                 o_pos, o_size, o_start = o
                 o_x, o_y = o_pos
-                if (t >= o_start) and (t <= o_start + 250):
+                if (t >= o_start) and (t <= o_start + 0.5 * ANIMATION_TIME):
                     s = pygame.Surface((2 * o_size, 2 * o_size), pygame.SRCALPHA)
-                    alpha = int(255 - 255 * ((t - o_start) / 250) ** 2)
+                    alpha = int(255 - 255 * ((t - o_start) / (0.5 * ANIMATION_TIME)) ** 2)
                     s.set_alpha(alpha)
                     pygame.draw.circle(s,
                                        (255, 255, 255),
                                        (int(o_size), int(o_size)),
-                                       (t - o_start) / 250 * o_size, 0)
+                                       (t - o_start) / int(0.5 * ANIMATION_TIME) * o_size, 0)
                     screen.blit(s, (o_x - o_size, o_y - o_size))
             pygame.display.flip()
 
