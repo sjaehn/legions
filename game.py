@@ -319,7 +319,8 @@ def main():
 
         # Run animation
         t0 = pygame.time.get_ticks()
-        pygame.mixer.Sound.play(sword_sound)
+        sound_idx = random.randint(0, 2)
+        pygame.mixer.Sound.play(sword_sound[sound_idx])
         while pygame.time.get_ticks() < t0 + 500:
             draw()
             t = pygame.time.get_ticks() - t0
@@ -497,7 +498,7 @@ def main():
     play_music()
     MUSIC_END = pygame.USEREVENT + 2
     pygame.mixer.music.set_endevent(MUSIC_END)
-    sword_sound = pygame.mixer.Sound(path + "sword_fight.wav")
+    sword_sound = [pygame.mixer.Sound(path + "sword_fight0" + str(i) + ".wav") for i in range(1, 4)]
 
     # Load images, fonts, ...
     bg_marble = load_image(path + "marble.jpg")     # Message box background
