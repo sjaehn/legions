@@ -43,6 +43,8 @@ TIMEOUT_TEXT = [[("la", "Tempus elapsum"), ("en", "Time is over")],
 WELCOME_TEXT = [("en", "Emperor, defeat foreign legions and take over their soldiers. "
                        "Then you will be honored with glory and fame in Rome!")]
 
+NEW_GAME_TEXT = [("la", "In proelium?"), ("en", "Into a new battle?")]
+
 LEVELS = [(4, 120), (4, 60), (5, 120), (5, 60), (6, 120), (6, 60), [5, 30], [6, 30], [6, 20], [6, 15], [6, 10], [6, 5]]
 
 
@@ -500,6 +502,7 @@ def main():
     MUSIC_END = pygame.USEREVENT + 2
     pygame.mixer.music.set_endevent(MUSIC_END)
     sword_sound = [pygame.mixer.Sound(path + "sword_fight0" + str(i) + ".wav") for i in range(1, 4)]
+    moan_sound = pygame.mixer.Sound(path + "moan.wav")
 
     # Load images, fonts, ...
     bg_marble = load_image(path + "marble.jpg")     # Message box background
@@ -556,6 +559,7 @@ def main():
                         draw()
 
                         if time <= 0:
+                            pygame.mixer.Sound.play(moan_sound)
                             msg_idx = random.randint(0, len(TIMEOUT_TEXT) - 1)
                             msg_txt = [translate_text(TIMEOUT_TEXT[msg_idx], "la")]
                             msg_loc = translate_text(TIMEOUT_TEXT[msg_idx], locale)
@@ -579,6 +583,7 @@ def main():
                             alive = False
                             fighting = False
                             draw()
+                            pygame.mixer.Sound.play(moan_sound)
                             msg_idx = random.randint(0, len(FAIL_TEXT) - 1)
                             msg_txt = [translate_text(FAIL_TEXT[msg_idx], "la")]
                             msg_loc = translate_text(FAIL_TEXT[msg_idx], locale)
@@ -602,6 +607,7 @@ def main():
                             alive = False
                             fighting = False
                             draw()
+                            pygame.mixer.Sound.play(moan_sound)
                             msg_idx = random.randint(0, len(ISOLATED_TEXT) - 1)
                             msg_txt = [translate_text(ISOLATED_TEXT[msg_idx], "la")]
                             msg_loc = translate_text(ISOLATED_TEXT[msg_idx], locale)
@@ -616,7 +622,12 @@ def main():
         if alive:
             msg_box("Game completed!", None, True, (500, 400, 900, 100))
 
-        if msg_box("A new fight?", ["In proelium", "Finis"], True, (500, 300, 900, 300)) == 1:
+        # New game?
+        new_game_text = [translate_text(NEW_GAME_TEXT, "la")]
+        new_game_loc = translate_text(NEW_GAME_TEXT, locale)
+        if new_game_loc:
+            new_game_text.append(("(" + new_game_loc + ")", sub_font))
+        if msg_box(new_game_text, ["Etiam", "Finis"], True, (500, 300, 900, 300)) == 1:
             game_on = False
 
     pygame.quit()
