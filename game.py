@@ -105,6 +105,7 @@ def main():
                 if field is not None:
                     value = field[0] * field[1]
                     if value > 0:
+                        animate_fight((xi, yi))
                         if value < game_count:
                             game_map.map[game_pos[0]][game_pos[1]] = None
                             game_pos = (xi, yi)
@@ -291,6 +292,51 @@ def main():
 
         return 0
 
+    def animate_fight(pos):
+        x, y = pos
+        xm = 2 ** size + 2
+        ym = 2 ** size + 2
+        dx1, dy1 = to_3d(((x + (0.5 * xm) / xm) * (WIDTH / game_map.width),
+                          (y + (0.5 * ym) / ym) * (HEIGHT / game_map.height)))
+        dx2, dy2 = to_3d(((x + (0.5 * xm + 1.2) / xm) * (WIDTH / game_map.width),
+                          (y + (0.5 * ym) / ym) * (HEIGHT / game_map.height)))
+        dx = dx2 - dx1
+        legion = game_map.map[x][y]
+        nr_objs = int((legion[0] + 3) * 0.25 * (legion[1] + 3))
+        obj_size = 2 * dx
+
+        # Seed objects
+        objs = []
+        for o in range(nr_objs):
+            o_dx = random.randint(-obj_size, obj_size)
+            o_dy = random.randint(-obj_size, obj_size)
+            o_x = dx1 + random.randint(-int(0.5 * legion[0] * dx), int(0.5 * legion[0] * dx)) + o_dx
+            o_y = int(dy1 + o_dy - 0.5 * obj_size)
+            o_pos = (o_x, o_y)
+            o_size = random.randint(int(0.5 * obj_size), obj_size)
+            o_start = random.randint(0, 250)
+            objs.append((o_pos, o_size, o_start))
+
+        # Run animation
+        t0 = pygame.time.get_ticks()
+        pygame.mixer.Sound.play(sword_sound)
+        while pygame.time.get_ticks() < t0 + 500:
+            draw()
+            t = pygame.time.get_ticks() - t0
+            for o in objs:
+                o_pos, o_size, o_start = o
+                o_x, o_y = o_pos
+                if (t >= o_start) and (t <= o_start + 250):
+                    s = pygame.Surface((2 * o_size, 2 * o_size), pygame.SRCALPHA)
+                    alpha = int(255 - 255 * ((t - o_start) / 250) ** 2)
+                    s.set_alpha(alpha)
+                    pygame.draw.circle(s,
+                                       (255, 255, 255),
+                                       (int(o_size), int(o_size)),
+                                       (t - o_start) / 250 * o_size, 0)
+                    screen.blit(s, (o_x - o_size, o_y - o_size))
+            pygame.display.flip()
+
     def draw():
         # Draw background first
         screen.blit(background, (0, 0))
@@ -451,6 +497,7 @@ def main():
     play_music()
     MUSIC_END = pygame.USEREVENT + 2
     pygame.mixer.music.set_endevent(MUSIC_END)
+    sword_sound = pygame.mixer.Sound(path + "sword_fight.wav")
 
     # Load images, fonts, ...
     bg_marble = load_image(path + "marble.jpg")     # Message box background
