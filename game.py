@@ -83,11 +83,10 @@ def main():
         nonlocal game_pos
         nonlocal game_count
         x, y = pos
-        print("enter", x, y)
+
         if (x > 0) and (x < WIDTH) and (y > 0) and (y < HEIGHT):
             xi = int(x / (WIDTH / game_map.width))
             yi = int(y / (HEIGHT / game_map.height))
-            print("xi, yi: ", xi, yi)
             if ((xi + 1, yi) == game_pos) or ((xi - 1, yi) == game_pos) or ((xi, yi + 1) == game_pos) or (
                     (xi, yi - 1) == game_pos):
                 field = game_map.map[xi][yi]
@@ -240,7 +239,6 @@ def main():
         if buttons:
             for button_text in buttons:
                 button_idx = buttons.index(button_text)
-                print(button_idx)
                 bx = int(x + 0.5 * w - 0.5 * len(buttons) * 200 - 0.5 * (len(buttons) - 1) * button_padding +
                          button_idx * 200 + button_idx * button_padding)
                 by = int(y + h - 10 - button_padding - button_height)
@@ -269,7 +267,6 @@ def main():
                             mx, my = pygame.mouse.get_pos()
 
                             button_idx = buttons.index(button_text)
-                            print(button_idx)
                             bx = int(
                                 x + 0.5 * w - 0.5 * len(buttons) * 200 - 0.5 * (len(buttons) - 1) * button_padding +
                                 button_idx * 200 + button_idx * button_padding)
@@ -354,7 +351,6 @@ def main():
                 # Draw barrier
                 elif not game_map.contains_legion((x, y)):
                     b_idx = game_map.map[x][y][0]
-                    print("b_idx:", b_idx)
                     bw = 0.9 * (to_3d(((x + 1) * (WIDTH / game_map.width), (y + 0.5) * (HEIGHT / game_map.height)))[0] -
                                 to_3d((x * (WIDTH / game_map.width), (y + 0.5) * (HEIGHT / game_map.height)))[0])
                     bx, by = to_3d(((x + 0.5) * (WIDTH / game_map.width), (y + 0.5) * (HEIGHT / game_map.height)))

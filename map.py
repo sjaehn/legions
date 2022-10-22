@@ -18,13 +18,10 @@ class Map:
         self.width, self.height = size
         random.seed()
 
-        print("Create map", self.width, "x", self.height)
-
         track = None
         while track is None:
             # Clear map
             self.map = [[(1, 1)] * size[0] for _ in range(size[1])]
-            print("Init")
 
             # Seed barriers
             min_barriers = (self.width - 4) * (self.height - 4)
@@ -53,33 +50,23 @@ class Map:
 
                 b_idx = random.randint(0, 3)
                 self.map[x][y] = (b_idx, 0)
-                print("Barrier:", x, y)
 
             # Generate a start point
             self.start = None
             while self.start is None or not self.contains_legion(self.start):
                 self.start = (random.randint(0, size[0] - 1), random.randint(0, size[1] - 1))
 
-            print("Start:", self.start)
-
             # Generate a track
             track = self.generate_track([self.start])
 
-        print("Start: ", self.start)
-        print("Track: ", track)
-
         # Generate value map
         values = generate_values(min_value, max_value)
-        print("Values: ", values)
 
         # Sort value map
         sidx = random.randint(2, 2 + int(math.sqrt(len(values) - 1)))
         chain_start = values[sidx]
         values.remove(chain_start)
         chain = self.generate_chain2(values, [chain_start])
-        print("Values: ", values)
-        print("Chain start: ", chain_start)
-        print("Chain: ", chain)
 
         # Build map
         if (track is not None) and (chain is not None):
@@ -156,7 +143,6 @@ class Map:
                 idx = random.randint(int(0.8 * midx), midx)
 
             v = vals[idx]
-            print(score, mscore, midx, v[0] * v[1])
             chain.append(v)
             score += v[0] * v[1]
             vals.remove(v)
