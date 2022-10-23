@@ -84,6 +84,10 @@ def to_roman(number):
     return roman
 
 
+def clip(x, minx, maxx):
+    return max(minx, min(x, maxx))
+
+
 def main():
 
     def enter(pos):
@@ -325,7 +329,7 @@ def main():
         sound_idx = random.randint(0, 2)
         pygame.mixer.Sound.play(sword_sound[sound_idx])
         while pygame.time.get_ticks() < t0 + ANIMATION_TIME:
-            draw()
+            draw([pos])
             t = pygame.time.get_ticks() - t0
             for o in objs:
                 o_pos, o_size, o_start = o
@@ -341,12 +345,69 @@ def main():
                     screen.blit(s, (o_x - o_size, o_y - o_size))
             pygame.display.flip()
 
-    def draw():
+    def draw_headline():
         # Draw background first
-        screen.blit(background, (0, 0))
+        s0 = pygame.Surface((220, 60), pygame.SRCALPHA)
+        s0.set_alpha(255)
+        s0.blit(background, (220 - WIDTH, 0))
+        screen.blit(s0, (WIDTH - 220, 0))
 
-        for x in range(game_map.width):
-            for y in range(game_map.height):
+        t_min = int(time / 60)
+        t_ds = int((time - 60 * t_min) / 10)
+        t_s = time - 60 * t_min - 10 * t_ds
+        time_img = font.render("Level " + to_roman(level_idx) + "      " + str(t_min) + ":" + str(t_ds) +
+                               str(t_s),
+                               True, (255, 255, 255))
+        time_pos = (WIDTH - 200, 20)
+        screen.blit(time_img, time_pos)
+        pygame.display.flip()
+
+    def draw(positions=None):
+        if positions is not None:
+            x = [p[0] for p in positions]
+            y = [p[1] for p in positions]
+            x_min = clip(min(x) - 1, 0, game_map.width - 1)
+            y_min = clip(min(y) - 1, -1, game_map.width - 1)    # lower limit: - 1! (labels / clouds above)
+            x_max = clip(max(x) + 1, 0, game_map.width - 1)
+            y_max = clip(max(y) + 1, 0, game_map.width - 1)
+        else:
+            x_min = 0
+            y_min = 0
+            x_max = game_map.width - 1
+            y_max = game_map.height - 1
+
+        # Clip screen area
+        if positions is not None:
+            p1 = to_3d((x_min * (WIDTH / game_map.width), y_min * (HEIGHT / game_map.height)))
+            p2 = to_3d((x_min * (WIDTH / game_map.width), (y_max + 1) * (HEIGHT / game_map.height)))
+            p3 = to_3d(((x_max + 1) * (WIDTH / game_map.width), (y_max + 1) * (HEIGHT / game_map.height)))
+            x0 = p2[0] - 4
+            y0 = p1[1] - 4
+            w0 = p3[0] - p2[0] + 8
+            h0 = p2[1] - p1[1] + 8
+
+        else:
+            x0 = 0
+            y0 = 0
+            w0 = WIDTH + 2 * XFRAME
+            h0 = HEIGHT + 2 * YFRAME
+
+        s0 = pygame.Surface((w0, h0), pygame.SRCALPHA)
+        s0.set_alpha(255)
+
+        # Draw background first
+        s0.blit(background, (-x0, -y0))
+        screen.blit(s0, (x0, y0))
+
+        # Re-validate coordinates range
+        y_min = clip(y_min, 0, game_map.width - 1)
+        x_min = clip(x_min - 1, 0, game_map.width - 1)
+        x_max = clip(x_max + 1, 0, game_map.width - 1)
+
+        for y in range(y_min, y_max + 1):
+            l_font = None
+
+            for x in range(x_min, x_max + 1):
 
                 # Draw fields
                 if game_map.map[x][y] is None:
@@ -449,9 +510,10 @@ def main():
 
                 # Draw labels
                 if game_map.contains_legion((x, y)):
-                    l_font = pygame.font.Font(path + "Cinzel-Bold.ttf",
-                                              to_3d((0, (y + 0.625) * (HEIGHT / game_map.height)))[1] -
-                                              to_3d((0, (y + 0.375) * (HEIGHT / game_map.height)))[1])
+                    if not l_font:
+                        l_font = pygame.font.Font(path + "Cinzel-Bold.ttf",
+                                                  to_3d((0, (y + 0.625) * (HEIGHT / game_map.height)))[1] -
+                                                  to_3d((0, (y + 0.375) * (HEIGHT / game_map.height)))[1])
 
                     if (x, y) == game_pos:
                         text1 = l_font.render(str(game_count), True, (255, 255, 255))
@@ -472,17 +534,7 @@ def main():
                     textpos = text1.get_rect(center=pos1)
                     screen.blit(text1, textpos)
 
-                # Draw level and time
-                t_min = int(time / 60)
-                t_ds = int((time - 60 * t_min) / 10)
-                t_s = time - 60 * t_min - 10 * t_ds
-                time_img = font.render("Level " + to_roman(level_idx) + "      " + str(t_min) + ":" + str(t_ds) +
-                                       str(t_s),
-                                       True, (255, 255, 255))
-                time_pos = (WIDTH - 200, 20)
-                screen.blit(time_img, time_pos)
-
-        pygame.display.flip()
+        draw_headline()
 
     # Game
     # Init
@@ -556,7 +608,7 @@ def main():
 
                     if event.type == TIME_EVENT:
                         time -= 1
-                        draw()
+                        draw_headline()
 
                         if time <= 0:
                             pygame.mixer.Sound.play(moan_sound)
@@ -575,6 +627,7 @@ def main():
                         quit(0)
 
                     elif event.type == pygame.MOUSEBUTTONDOWN:
+                        o_gpos = game_pos
                         pos = pygame.mouse.get_pos()
                         pos = to_2d(pos)
                         b = enter(pos)
@@ -582,7 +635,7 @@ def main():
                         if not b:
                             alive = False
                             fighting = False
-                            draw()
+                            draw([o_gpos, game_pos])
                             pygame.mixer.Sound.play(moan_sound)
                             msg_idx = random.randint(0, len(FAIL_TEXT) - 1)
                             msg_txt = [translate_text(FAIL_TEXT[msg_idx], "la")]
@@ -594,7 +647,7 @@ def main():
 
                         elif game_map.is_empty():
                             fighting = False
-                            draw()
+                            draw([o_gpos, game_pos])
                             msg_idx = random.randint(0, len(VICTORY_TEXT) - 1)
                             msg_txt = [translate_text(VICTORY_TEXT[msg_idx], "la")]
                             msg_loc = translate_text(VICTORY_TEXT[msg_idx], locale)
@@ -606,7 +659,7 @@ def main():
                         elif not game_map.has_neighbors(game_pos):
                             alive = False
                             fighting = False
-                            draw()
+                            draw([o_gpos, game_pos])
                             pygame.mixer.Sound.play(moan_sound)
                             msg_idx = random.randint(0, len(ISOLATED_TEXT) - 1)
                             msg_txt = [translate_text(ISOLATED_TEXT[msg_idx], "la")]
@@ -617,7 +670,7 @@ def main():
                             msg_box(msg_txt, None, True, (500, 400, 900, 100))
 
                         else:
-                            draw()
+                            draw([o_gpos, game_pos])
 
         if alive:
             msg_box("Game completed!", None, True, (500, 400, 900, 100))
