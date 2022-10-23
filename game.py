@@ -139,13 +139,12 @@ def main():
 
     def play_music():
         snd_idx = random.randint(1, 3)
-        pygame.mixer.music.load(path + "track0" + str(snd_idx) + ".ogg")
+        pygame.mixer.music.load(os.path.join(path, "track0" + str(snd_idx) + ".ogg"))
         pygame.mixer.music.play()
 
     def load_image(name, colorkey=None):
-        fullname = os.path.join('data', name)
         try:
-            image = pygame.image.load(fullname)
+            image = pygame.image.load(name)
         except pygame.error as message:
             print('Cannot load image:', name)
             raise SystemExit(message)
@@ -511,7 +510,7 @@ def main():
                 # Draw labels
                 if game_map.contains_legion((x, y)):
                     if not l_font:
-                        l_font = pygame.font.Font(path + "Cinzel-Bold.ttf",
+                        l_font = pygame.font.Font(os.path.join(path, "Cinzel-Bold.ttf"),
                                                   to_3d((0, (y + 0.625) * (HEIGHT / game_map.height)))[1] -
                                                   to_3d((0, (y + 0.375) * (HEIGHT / game_map.height)))[1])
 
@@ -539,7 +538,7 @@ def main():
     # Game
     # Init
     random.seed()
-    path = os.getcwd() + "/inc/"
+    path = os.getcwd() + "/inc"
     locale = "en"
     TIME_EVENT = pygame.USEREVENT + 1
 
@@ -553,16 +552,16 @@ def main():
     play_music()
     MUSIC_END = pygame.USEREVENT + 2
     pygame.mixer.music.set_endevent(MUSIC_END)
-    sword_sound = [pygame.mixer.Sound(path + "sword_fight0" + str(i) + ".wav") for i in range(1, 4)]
-    moan_sound = pygame.mixer.Sound(path + "moan.wav")
+    sword_sound = [pygame.mixer.Sound(os.path.join(path, "sword_fight0" + str(i) + ".wav")) for i in range(1, 4)]
+    moan_sound = pygame.mixer.Sound(os.path.join(path, "moan.wav"))
 
     # Load images, fonts, ...
-    bg_marble = load_image(path + "marble.jpg")     # Message box background
-    font = pygame.font.Font(path + "Cinzel-Regular.ttf", 24)
-    title_font = pygame.font.Font(path + "Cinzel-Regular.ttf", 36)
-    sub_font = pygame.font.Font(path + "Cinzel-Regular.ttf", 12)
-    soldier = load_image(path + "soldier.png")
-    barrier = [load_image(path + "barrier0" + str(n) + ".png") for n in range(1, 5)]
+    bg_marble = load_image(os.path.join(path, "marble.jpg"))     # Message box background
+    font = pygame.font.Font(os.path.join(path, "Cinzel-Regular.ttf"), 24)
+    title_font = pygame.font.Font(os.path.join(path, "Cinzel-Regular.ttf"), 36)
+    sub_font = pygame.font.Font(os.path.join(path, "Cinzel-Regular.ttf"), 12)
+    soldier = load_image(os.path.join(path, "soldier.png"))
+    barrier = [load_image(os.path.join(path, "barrier0" + str(n) + ".png")) for n in range(1, 5)]
 
     # Start screen
     game_on = True
@@ -591,7 +590,7 @@ def main():
 
             # Load new Background
             img_idx = random.randint(1, 6)
-            bgimage = load_image(path + "bg0" + str(img_idx) + ".jpg")
+            bgimage = load_image(os.path.join(path, "bg0" + str(img_idx) + ".jpg"))
             background = pygame.Surface(screen.get_size(), pygame.SRCALPHA, 32)
             background = background.convert_alpha()
             background.blit(bgimage[0], (0, 0))
