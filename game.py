@@ -538,7 +538,7 @@ def main():
     # Game
     # Init
     random.seed()
-    path = os.getcwd() + "/inc"
+    path = os.path.join(os.getcwd(), "inc")
     locale = "en"
     TIME_EVENT = pygame.USEREVENT + 1
 
