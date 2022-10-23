@@ -21,7 +21,7 @@ all armies are defeated. Take care about the time remaining.
 
 ## TODO
 * Translation to Latin, more phrases
-* English (or locale) subtitles
+* Locale translations
 * Artwork
 * Soundtrack
 

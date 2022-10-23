@@ -139,7 +139,7 @@ def main():
 
     def play_music():
         snd_idx = random.randint(1, 3)
-        pygame.mixer.music.load(os.getcwd() + "/track0" + str(snd_idx) + ".ogg")
+        pygame.mixer.music.load(path + "track0" + str(snd_idx) + ".ogg")
         pygame.mixer.music.play()
 
     def load_image(name, colorkey=None):
@@ -539,7 +539,7 @@ def main():
     # Game
     # Init
     random.seed()
-    path = os.getcwd() + "/"
+    path = os.getcwd() + "/inc/"
     locale = "en"
     TIME_EVENT = pygame.USEREVENT + 1
 
@@ -590,7 +590,7 @@ def main():
             pygame.time.set_timer(TIME_EVENT, 1000)     # Re-enable timer
 
             # Load new Background
-            img_idx = random.randint(1, 5)
+            img_idx = random.randint(1, 6)
             bgimage = load_image(path + "bg0" + str(img_idx) + ".jpg")
             background = pygame.Surface(screen.get_size(), pygame.SRCALPHA, 32)
             background = background.convert_alpha()
